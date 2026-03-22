@@ -7,7 +7,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
 
-## The Problem
+## Why This Exists
 
 The default Kubernetes GPU scheduler is fundamentally broken for ML workloads. It treats GPUs as opaque integers: find a node with a free GPU, place the pod there. No bin-packing. No awareness of job types. No understanding of distributed training requirements.
 
