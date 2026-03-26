@@ -6,8 +6,8 @@ import pytest
 
 from container_gpu_scheduler.core import (
     BinPackScheduler,
-    GPUCluster,
     GangScheduler,
+    GPUCluster,
     SpreadScheduler,
 )
 from container_gpu_scheduler.exceptions import (
@@ -24,7 +24,6 @@ from container_gpu_scheduler.models import (
     SchedulingStrategy,
 )
 from container_gpu_scheduler.utils import create_training_job
-
 
 # ── BinPackScheduler Tests ─────────────────────────────────────────────────────
 

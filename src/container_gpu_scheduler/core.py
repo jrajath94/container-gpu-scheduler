@@ -12,13 +12,10 @@ jobs can evict lower-priority jobs to claim GPU resources.
 from __future__ import annotations
 
 import logging
-from typing import Optional
 
 from container_gpu_scheduler.exceptions import (
     GangSchedulingError,
-    InsufficientResourcesError,
     InvalidJobError,
-    PreemptionError,
 )
 from container_gpu_scheduler.models import (
     ClusterSnapshot,
@@ -79,7 +76,7 @@ class BinPackScheduler:
         pod: PodSpec,
         gpu_type: GPUType,
         job_id: str,
-    ) -> Optional[SchedulingDecision]:
+    ) -> SchedulingDecision | None:
         """Schedule a single pod using bin-packing.
 
         Args:
@@ -152,7 +149,7 @@ class SpreadScheduler:
         pod: PodSpec,
         gpu_type: GPUType,
         job_id: str,
-    ) -> Optional[SchedulingDecision]:
+    ) -> SchedulingDecision | None:
         """Schedule a single pod using spread strategy.
 
         Args:

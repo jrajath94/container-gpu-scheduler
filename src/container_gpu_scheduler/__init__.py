@@ -2,6 +2,12 @@
 
 __version__ = "0.1.0"
 
+from container_gpu_scheduler.core import (
+    BinPackScheduler,
+    GangScheduler,
+    GPUCluster,
+    SpreadScheduler,
+)
 from container_gpu_scheduler.models import (
     ClusterSnapshot,
     GPUType,
@@ -12,12 +18,6 @@ from container_gpu_scheduler.models import (
     SchedulerConfig,
     SchedulingResult,
     SchedulingStrategy,
-)
-from container_gpu_scheduler.core import (
-    BinPackScheduler,
-    GangScheduler,
-    GPUCluster,
-    SpreadScheduler,
 )
 
 __all__ = [

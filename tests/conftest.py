@@ -4,13 +4,11 @@ from __future__ import annotations
 
 import pytest
 
-from container_gpu_scheduler.core import BinPackScheduler, GPUCluster, GangScheduler
+from container_gpu_scheduler.core import GPUCluster
 from container_gpu_scheduler.models import (
     GPUType,
     JobSpec,
-    JobState,
     NodeResources,
-    PodSpec,
     SchedulerConfig,
     SchedulingStrategy,
 )

@@ -5,9 +5,9 @@ from __future__ import annotations
 import pytest
 
 from container_gpu_scheduler.models import (
-    ClusterSnapshot,
     GPU_COMPUTE_UNITS,
     GPU_MEMORY_GB,
+    ClusterSnapshot,
     GPUSlot,
     GPUType,
     JobSpec,
@@ -15,7 +15,6 @@ from container_gpu_scheduler.models import (
     NodeResources,
     PodSpec,
     SchedulerConfig,
-    SchedulingDecision,
     SchedulingResult,
     SchedulingStrategy,
 )

@@ -240,7 +240,7 @@ def main() -> None:
     print_results("Preemption Overhead", preemption)
 
     # Scaling
-    print(f"\nCluster Size Scaling")
+    print("\nCluster Size Scaling")
     print("-" * 60)
     print(f"  {'Nodes':>5s} | {'GPUs':>5s} | {'Jobs':>5s} | {'Jobs/sec':>10s} | {'p50 (us)':>10s} | {'p99 (us)':>10s}")
     print(f"  {'-'*5} | {'-'*5} | {'-'*5} | {'-'*10} | {'-'*10} | {'-'*10}")

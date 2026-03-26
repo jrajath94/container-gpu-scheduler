@@ -8,7 +8,6 @@ from __future__ import annotations
 
 import logging
 import uuid
-from typing import Any
 
 from container_gpu_scheduler.models import (
     ClusterSnapshot,
@@ -85,9 +84,7 @@ def can_fit_pod(node: NodeResources, pod: PodSpec, gpu_type: GPUType) -> bool:
     """
     if node.gpu_type != gpu_type:
         return False
-    if node.free_gpus < pod.gpu_count:
-        return False
-    return True
+    return node.free_gpus >= pod.gpu_count
 
 
 def format_cluster_snapshot(snapshot: ClusterSnapshot) -> str:
