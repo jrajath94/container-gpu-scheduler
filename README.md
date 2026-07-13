@@ -1,9 +1,8 @@
 # container-gpu-scheduler
 
-> GPU-aware bin-packing and gang scheduling that cuts cluster fragmentation from 31% to 8%
+> GPU-aware bin-packing and gang scheduling for Kubernetes ML workloads
 
 [![CI](https://github.com/jrajath94/container-gpu-scheduler/workflows/CI/badge.svg)](https://github.com/jrajath94/container-gpu-scheduler/actions)
-[![Coverage](https://img.shields.io/badge/coverage-86%25-brightgreen)](https://github.com/jrajath94/container-gpu-scheduler)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
 
@@ -11,17 +10,17 @@
 
 The default Kubernetes GPU scheduler is fundamentally broken for ML workloads. It treats GPUs as opaque integers: find a node with a free GPU, place the pod there. No bin-packing. No awareness of job types. No understanding of distributed training requirements.
 
-The result: 30% of your GPUs sit idle. You have 10 nodes with 1 free GPU each. You submit a distributed training job needing 4 GPUs on one node. It cannot schedule. Kubernetes has no mechanism to consolidate smaller workloads and free up contiguous capacity. Meanwhile, you are paying $15,000 per A100 per year in cloud costs for GPUs that produce nothing.
+The result: GPUs sit idle. You have 10 nodes with 1 free GPU each. You submit a distributed training job needing 4 GPUs on one node. It cannot schedule. Kubernetes has no mechanism to consolidate smaller workloads and free up contiguous capacity. Meanwhile, you pay for idle GPU capacity in cloud costs.
 
 For distributed training, it is worse. You submit a job needing 8 GPUs across 2 nodes (4 on each). Kubernetes schedules pods 1-4 on node A, then cannot find 4 contiguous GPUs on any node for pods 5-8. The training job deadlocks. Pods 1-4 sit idle, holding GPUs hostage, while the remaining pods wait indefinitely.
 
-The default scheduler was designed for CPUs and memory -- fungible, divisible resources. GPUs are fundamentally different: discrete (you cannot give a pod 0.5 GPUs without MIG), topology-sensitive (NVLink is 19x faster than PCIe for inter-GPU communication), heterogeneous (an A100 is not interchangeable with a V100), and all-or-nothing for multi-GPU jobs. Existing solutions like Volcano and Kueue address these problems but are complex Go-based systems requiring significant operational overhead. I built the core scheduling algorithms cleanly in Python, testable without a real cluster, to demonstrate that bin-packing and gang scheduling deliver 1.8x better GPU utilization with minimal complexity.
+The default scheduler was designed for CPUs and memory -- fungible, divisible resources. GPUs are fundamentally different: discrete (you cannot give a pod 0.5 GPUs without MIG), topology-sensitive (NVLink is 19x faster than PCIe for inter-GPU communication), heterogeneous (an A100 is not interchangeable with a V100), and all-or-nothing for multi-GPU jobs. Existing solutions like Volcano and Kueue address these problems but are complex Go-based systems requiring significant operational overhead. I built the core scheduling algorithms cleanly in Python, testable without a real cluster, with minimal complexity.
 
 ## What This Project Does
 
 GPU-aware scheduling with three core algorithms and priority-based preemption, all testable without Kubernetes.
 
-- **Bin-pack scheduling** -- First Fit Decreasing heuristic consolidates workloads onto fewer nodes, reducing fragmentation from 31% to 8.2%
+- **Bin-pack scheduling** -- First Fit Decreasing heuristic consolidates workloads onto fewer nodes, reducing fragmentation
 - **Spread scheduling** -- distributes workloads evenly across nodes for fault isolation
 - **Gang scheduling** -- all-or-nothing placement for distributed training; all pods schedule together or none do, preventing deadlocks
 - **Priority preemption** -- high-priority training jobs can evict low-priority inference pods with configurable thresholds to prevent churn
@@ -97,7 +96,7 @@ Run `make bench` to benchmark scheduling throughput, latency, and scaling on you
 
 The scheduling problem has two dimensions: **bin-packing** (minimize the number of nodes used) and **gang scheduling** (all-or-nothing placement for multi-GPU jobs). Both are NP-hard in the general case, but greedy heuristics work well for realistic cluster sizes.
 
-**Bin-packing** uses the First Fit Decreasing (FFD) heuristic. Jobs are sorted by GPU requirement (largest first), then each job is placed on the best-fit node -- the node where the remaining capacity after placement is minimized. This is a well-studied combinatorial optimization: FFD achieves an asymptotic ratio of 11/9 \* OPT + 6/9, meaning it uses at most ~22% more bins than optimal. In practice on GPU clusters, it reduces fragmentation from 31% to 8.2%.
+**Bin-packing** uses the First Fit Decreasing (FFD) heuristic. Jobs are sorted by GPU requirement (largest first), then each job is placed on the best-fit node -- the node where the remaining capacity after placement is minimized. This is a well-studied combinatorial optimization: FFD achieves an asymptotic ratio of 11/9 \* OPT + 6/9, meaning it uses at most ~22% more bins than optimal.
 
 **Gang scheduling** handles distributed training jobs where all pods must be placed simultaneously. The algorithm uses backtracking search with FFD ordering: sort gang members by GPU requirement (largest first), then try to place each member on the best-fit node. If placement fails for any member, backtrack and try the next candidate node. If all candidates are exhausted for any member, the entire gang fails to schedule. This guarantees atomicity -- either all pods are placed or none are, preventing the deadlock scenario where some pods hold GPUs while others cannot schedule.
 
@@ -110,7 +109,7 @@ One important edge case: GPU topology matters enormously for distributed trainin
 ## Testing
 
 ```bash
-make test    # 54 tests, 86% coverage
+make test    # Run unit tests with coverage
 make bench   # Performance benchmarks with cluster scaling
 make lint    # Ruff + mypy
 make run     # Quick-start example
