@@ -78,39 +78,9 @@ result = cluster.submit_job(urgent)
 
 ## Key Results
 
-### Scheduling Throughput
+Bin-packing consolidates workloads onto fewer nodes (typically 4 of 8), freeing the rest for large jobs or power-down. Gang scheduling increases distributed training success rates compared to sequential placement.
 
-| Metric                        | Value  |
-| ----------------------------- | ------ |
-| Jobs/sec (500 jobs, 256 GPUs) | 7,868  |
-| Scheduling latency p50        | 119 us |
-| Scheduling latency p99        | 262 us |
-
-### Packing Efficiency
-
-| Strategy | GPU Utilization | Active Nodes (of 8) |
-| -------- | --------------- | ------------------- |
-| Bin-pack | 48%             | 4                   |
-| Spread   | 48%             | 8                   |
-
-Bin-packing consolidates the same workload onto **half the nodes**, freeing the rest for large jobs or power-down.
-
-### Fragmentation Reduction
-
-| Metric                       | Without Bin-Packing | With Bin-Packing | Improvement              |
-| ---------------------------- | ------------------- | ---------------- | ------------------------ |
-| Unused GPU fraction          | 31%                 | 8.2%             | 3.8x less waste          |
-| Gang scheduling success rate | 62%                 | 98.2%            | 1.6x more jobs scheduled |
-
-### Cluster Scaling
-
-| Nodes | GPUs | Jobs | Jobs/sec | p50 (us) | p99 (us) |
-| ----- | ---- | ---- | -------- | -------- | -------- |
-| 4     | 32   | 16   | 36,046   | 20       | 27       |
-| 8     | 64   | 32   | 20,182   | 30       | 370      |
-| 16    | 128  | 64   | 16,652   | 50       | 89       |
-| 32    | 256  | 128  | 10,414   | 89       | 125      |
-| 64    | 512  | 256  | 5,601    | 170      | 260      |
+Run `make bench` to benchmark scheduling throughput, latency, and scaling on your hardware.
 
 ## Design Decisions
 
